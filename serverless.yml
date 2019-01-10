@@ -1,0 +1,65 @@
+service: ${env:CONTEXT}
+
+# enables sqs as DLQ for lambdas
+plugins:
+  - serverless-plugin-lambda-dead-letter
+
+custom:
+    context: ${env:CONTEXT}
+    service: ${env:SERVICE}
+    environment: ${env:ENVIRONMENT}
+    aws_accountid: ${env:AWS_ACCOUNTID}
+    deployment_bucket: ${env:DEPLOYMENT_BUCKET}
+    lambda_name: ${env:CONTEXT}-${env:SERVICE}-${env:ENVIRONMENT}  
+
+tags:
+  context: ${self:custom.context}
+  stack: ${self:custom.service}
+
+provider:
+  name: aws
+  runtime: python3.6
+  region: eu-west-1
+  stage: ${opt:stage, 'staging'}
+  deploymentBucket:
+    name: ${self:custom.deployment_bucket}
+    serverSideEncryption: AES256
+
+functions:
+  lambdafunction1:
+    name: ${self:custom.lambda_name}
+    handler: lambda.handler
+    description: <add description here>
+    memorySize: 128
+    timeout: 10
+    reservedConcurrency: 5
+    role: arn:aws:iam::${self:custom.aws_accountid}:role/context/${self:custom.context}-${self:custom.environment}
+    deadLetter:
+      sqs:  ${self:custom.context}-${self:custom.service}deadletter-${self:custom.environment}
+    tags:
+      service: ${self:custom.service}
+    environment:
+      varA: varA
+    events:      
+#      - sqs:      
+#          arn: arn:aws:sqs:eu-west-1:${self:custom.aws_accountid}:${self:custom.context}-${self:custom.service}outbound-${self:custom.environment}    # created manually out of Cloudformation scope
+#          batchSize: 1
+      - sqs:
+          arn:
+            Fn::GetAtt:
+            - Messagequeue1
+            - Arn
+          batchSize: 1          
+
+resources:
+  Resources:
+    Messagequeue1:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.context}-${self:custom.service}inbound-${self:custom.environment}
+        MessageRetentionPeriod: 1209600
+        VisibilityTimeout: 60
+# weird structure for tags, took a while to nail it, so leaving as comment
+#        Tags:
+#          - Key: KeyName
+#            Value: Value

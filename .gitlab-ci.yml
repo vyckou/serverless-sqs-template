@@ -1,0 +1,35 @@
+image: <internal docker image>
+
+variables:
+  VAULT_ADDR: <vault_enpoint>
+  CONTEXT: <context>
+  SERVICE: <service>
+  AWS_ACCOUNTID: <awsaccountid>
+  DEPLOYMENT_BUCKET: <s3 bucket>
+
+stages:
+  - staging
+  - production
+
+.serverless:
+  only:
+    - master
+  except:
+    - tags
+  allow_failure: false    
+  script:
+    - npm install serverless-plugin-lambda-dead-letter
+    - vaultenv serverless deploy --stage ${ENVIRONMENT} --verbose
+
+serverless:staging:
+  stage: staging
+  extends: .serverless 
+  variables:
+    ENVIRONMENT: staging
+
+serverless:production:
+  stage: production
+  extends: .serverless
+  when: manual  
+  variables:
+    ENVIRONMENT: production
