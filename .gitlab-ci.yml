@@ -22,7 +22,7 @@ stages:
     - tags
   allow_failure: false    
   script:
-    - npm install serverless-plugin-lambda-dead-letter
+    - npm install serverless-plugin-lambda-dead-letter --loglevel=error
     - vaultenv serverless deploy --stage ${ENVIRONMENT} --verbose
 
 serverless:staging:
