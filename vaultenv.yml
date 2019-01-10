@@ -1,0 +1,17 @@
+auth:
+  method: kubernetes
+  data:
+    role: gitlab
+
+# arguments specified here can be specified when running vaultenv like so:
+# > vaultenv --arg environment=production --arg context=snakegame env
+args:
+  - name: ENVIRONMENT
+  - name: CONTEXT
+
+secrets:
+  # creates AWS credentials that are revoked after 15 minutes
+  - write: aws/sts/${CONTEXT}-${ENVIRONMENT}-infrastructure
+    type: aws
+    data:
+      ttl: 15m
