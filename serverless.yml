@@ -9,7 +9,7 @@ custom:
     service: ${env:SERVICE}
     environment: ${env:ENVIRONMENT}
     aws_accountid: ${env:AWS_ACCOUNTID}
-    deployment_bucket: ${env:DEPLOYMENT_BUCKET}
+    deployment_bucket: ${env:SERVERLESS_DEPLOYMENT_BUCKET}
     lambda_name: ${env:CONTEXT}-${env:SERVICE}-${env:ENVIRONMENT}  
 
 tags:
