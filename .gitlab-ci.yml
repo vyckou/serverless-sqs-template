@@ -1,11 +1,15 @@
-image: <internal docker image>
+# Following variables must be specified in GitLab CI group variables set:
+#   * AWS_ACCOUNTID
+#   * SERVERLESS_DEPLOYMENT_BUCKET
+#   * AWS_DEFAULT_REGION
+#   * CI_IMAGE
+#   * VAULT_ADDR
+
+image: ${CI_IMAGE}
 
 variables:
-  VAULT_ADDR: <vault_enpoint>
   CONTEXT: <context>
   SERVICE: <service>
-  AWS_ACCOUNTID: <awsaccountid>
-  DEPLOYMENT_BUCKET: <s3 bucket>
 
 stages:
   - staging
