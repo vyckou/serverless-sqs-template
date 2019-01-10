@@ -59,7 +59,10 @@ resources:
         QueueName: ${self:custom.context}-${self:custom.service}inbound-${self:custom.environment}
         MessageRetentionPeriod: 1209600
         VisibilityTimeout: 60
-# weird structure for tags, took a while to nail it, so leaving as comment
-#        Tags:
-#          - Key: KeyName
-#            Value: Value
+        Tags:
+          - Key: context
+            Value: ${self:custom.context}
+          - Key: service
+            Value: ${self:custom.service}
+          - Key: stack
+            Value: ${self:custom.environment}
