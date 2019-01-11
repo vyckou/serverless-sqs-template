@@ -12,10 +12,6 @@ custom:
     deployment_bucket: ${env:SERVERLESS_DEPLOYMENT_BUCKET}
     lambda_name: ${env:CONTEXT}-${env:SERVICE}-${env:ENVIRONMENT}  
 
-tags:
-  context: ${self:custom.context}
-  stack: ${self:custom.service}
-
 provider:
   name: aws
   runtime: python3.6
@@ -24,6 +20,11 @@ provider:
   deploymentBucket:
     name: ${self:custom.deployment_bucket}
     serverSideEncryption: AES256
+  role: arn:aws:iam::${self:custom.aws_accountid}:role/context/${self:custom.context}-${self:custom.environment}    
+  tags:
+    context: ${self:custom.context}
+    service: ${self:custom.service}
+    stack: ${self:custom.service}
 
 functions:
   lambdafunction1:
@@ -33,11 +34,8 @@ functions:
     memorySize: 128
     timeout: 10
     reservedConcurrency: 5
-    role: arn:aws:iam::${self:custom.aws_accountid}:role/context/${self:custom.context}-${self:custom.environment}
     deadLetter:
       sqs:  ${self:custom.context}-${self:custom.service}deadletter-${self:custom.environment}
-    tags:
-      service: ${self:custom.service}
     environment:
       varA: varA
     events:      
@@ -49,7 +47,7 @@ functions:
             Fn::GetAtt:
             - Messagequeue1
             - Arn
-          batchSize: 1          
+          batchSize: 1
 
 resources:
   Resources:
