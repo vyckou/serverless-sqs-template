@@ -28,7 +28,7 @@ provider:
 functions:
   lambdafunction1:
     name: ${self:custom.lambda_name}
-    handler: lambda.handler
+    handler: resources/lambda.handler
     description: <add description here>
     memorySize: 128
     timeout: 10
